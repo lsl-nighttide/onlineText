@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!--
+     settings包含很多重要的设置项
+     setting:用来设置每一个设置项
+         name：设置项名
+         value：设置项取值
+         使用前提：数据库表设计按照规范“字段名中各单词使用下划线"_"划分”；
+  使用好处：省去mapper.xml文件中繁琐编写表字段列表与表实体类属性的映射关系，即resultMap
+  -->
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <!--    取别名-->
+    <typeAliases>
+        <!--        单个别名-->
+        <!--        <typeAlias type="entity.Sal" alias="sal"></typeAlias>-->
+        <!--        所有别名，别名就是类名，不区分大小写-->
+        <package name="entity"/>
+    </typeAliases>
+
+    <!--引入pageHelper分页插件，注意plugin标签位置-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+
+            <!-- 该参数默认为false -->
+            <!-- 设置为true时，会将RowBounds第一个参数offset当成pageNum页码使用 -->
+            <!-- 和startPage中的pageNum效果一样-->
+            <property name="offsetAsPageNum" value="true"/>
+            <!-- 该参数默认为false -->
+            <!-- 设置为true时，使用RowBounds分页会进行count查询 -->
+            <property name="rowBoundsWithCount" value="true"/>
+            <!-- 设置为true时，如果pageSize=0或者RowBounds.limit = 0就会查询出全部的结果 -->
+            <!-- （相当于没有执行分页查询，但是返回结果仍然是Page类型）-->
+            <property name="pageSizeZero" value="true"/>
+            <!-- 3.3.0版本可用 - 分页参数合理化，默认false禁用 -->
+            <!-- 启用合理化时，如果pageNum<1会查询第一页，如果pageNum>pages会查询最后一页 -->
+            <!-- 禁用合理化时，如果pageNum<1或pageNum>pages会返回空数据 -->
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
+</configuration>

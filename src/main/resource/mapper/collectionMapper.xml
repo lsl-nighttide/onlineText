@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.collectionMapper">
+    <resultMap id="BaseMap" type="Collection_ques">
+        <id property="collection_id" column="collection_id"/>
+        <result property="userid" column="userid"/>
+        <result property="question_id" column="question_id"/>
+    </resultMap>
+    <insert id="addCollection" parameterType="collection_ques">
+     insert into collection values
+     <foreach collection="list" index="index" item="item" separator=",">
+     (#{item.collection_id},#{item.userid},#{item.question_id})
+     </foreach>
+     </insert>
+    <delete id="deleteCollection" parameterType="int">
+        delete from collection where collection_id = #{collection_id}
+    </delete>
+    <select id="getCollectionAll" resultMap="BaseMap">
+        select * from collection
+    </select>
+    <select id="queryCollectionById" parameterType="int" resultMap="BaseMap">
+        select * from collection where collection_id = #{collection_id}
+    </select>
+    <select id="queryCollectionByQuestion_id" parameterType="int" resultMap="BaseMap">
+        select * from collection where question_id = #{question_id}
+    </select>
+    <select id="queryCollectionByUserid" parameterType="java.lang.String" resultMap="BaseMap">
+        select * from collection where userid = #{userid}
+    </select>
+</mapper>

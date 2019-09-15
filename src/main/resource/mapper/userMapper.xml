@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.userMapper">
+    <resultMap id="BaseMap" type="User">
+        <id property="userid" column="userid"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="sex" column="sex"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="introduce" column="introduce"/>
+        <result property="pic" column="pic"/>
+        <result property="permissions" column="permissions"/>
+    </resultMap>
+    <resultMap id="ResultMap" type="User" extends="BaseMap">
+        <collection property="majorType" ofType="Major">
+            <id property="majorid" column="majorid"/>
+            <result property="userid" column="userid(1)"/>
+            <result property="majorType" column="majorType"/>
+        </collection>
+    </resultMap>
+    <resultMap id="RichResultMap" type="User" extends="BaseMap">
+        <collection property="majorType" ofType="Major" javaType="java.util.List" column="userid"
+                    select="querymajorTypeById">
+            <id property="majorid" column="majorid"/>
+            <result property="userid" column="userid(1)"/>
+            <result property="majorType" column="majorType"/>
+        </collection>
+    </resultMap>
+    <resultMap id="majorType" type="Major">
+        <id property="majorid" column="majorid"/>
+        <result property="userid" column="userid"/>
+        <result property="majorType" column="majorType"/>
+    </resultMap>
+    <!--    添加用户-->
+    <insert id="addUser" parameterType="user">
+        insert into user values(#{userid},#{username},#{password},#{sex},#{phone},#{address},#{introduce},#{pic},#{permissions})
+    </insert>
+    <!--    删除用户-->
+    <delete id="deleteUser" parameterType="java.lang.String">
+        delete from user where userid = #{userid}
+    </delete>
+    <!--    批量删除用户-->
+    <delete id="deleteUsers" parameterType="java.lang.String">
+        delete from user
+        <foreach collection="list" item="userid" open="where userid in ( " close=")" separator=",">
+            #{userid}
+        </foreach>
+    </delete>
+    <!--    更新用户-->
+    <update id="updateUser" parameterType="user">
+        update user
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="address !=  null">
+                address = #{address},
+            </if>
+            <if test="introduce != null">
+                introduce = #{introduce}
+            </if>
+        </set>
+        <where>
+            <if test="userid != null">
+                userid = #{userid}
+            </if>
+        </where>
+    </update>
+    <select id="queryById" parameterType="java.lang.String" resultMap="RichResultMap">
+        select  * from user left join major on user.userid = major.userid group by user.userid having user.userid = #{userid}
+    </select>
+    <!--    根据参数位置-->
+    <!--    <select id="queryByIdAndPwd" parameterType="String ,String" resultType="user">
+            select * from user where userid = #{param1} and password = #{param2}
+        </select>-->
+    <!--    根据注解传来的值-->
+    <select id="queryByIdAndPwd" parameterType="java.lang.String" resultMap="ResultMap">
+        select * from user left join  major on user.userid = major.userid
+        group by user.userid having username= #{username} and password = #{password}
+    </select>
+    <!--    查询所有用户-->
+    <select id="getAll" resultType="user">
+        select * from  user order by permissions ASC
+    </select>
+    <!--    删除方向-->
+    <delete id="deleteMajorType" parameterType="String">
+    delete from major where userid = #{userid}
+</delete>
+    <!--    添加方向-->
+    <insert id="insertMajorType" parameterType="major">
+        insert into major values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.majorid},#{item.userid},#{item.majorType})
+        </foreach>
+    </insert>
+    <!--    更新头像-->
+    <update id="update_img" parameterType="user">
+        update user set pic = #{pic} where userid = #{userid}
+    </update>
+    <update id="update_permissions" parameterType="user">
+    update user set permissions = #{permissions} where userid = #{userid}
+</update>
+    <!--    根据权限得到相应的信息-->
+    <select id="getAllByPermissions" parameterType="int" resultMap="RichResultMap">
+        select user.*,major.majorid,major.majorType from user left join major
+        on user.userid = major.userid group by user.userid having permissions = #{permissions}
+        <!--  <if test="">
+              select * from user,major where permissions = #{permissions} and user.userid = major.userid
+          </if>-->
+    </select>
+
+    <select id="querymajorTypeById" parameterType="java.lang.String" resultMap="majorType">
+select * from major where userid = #{userid}
+    </select>
+    <select id="queryMaxUserid" parameterType="int" resultType="java.lang.String">
+        select max(userid) from user where permissions = #{permissions}
+    </select>
+</mapper>

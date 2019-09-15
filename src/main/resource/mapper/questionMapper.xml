@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.questionMapper">
+    <resultMap id="BaseMap" type="Question">
+        <id property="question_id" column="question_id"/>
+        <result property="question_title" column="question_title"/>
+        <result property="question_OptionA" column="question_OptionA"/>
+        <result property="question_OptionB" column="question_OptionB"/>
+        <result property="question_OptionC" column="question_OptionC"/>
+        <result property="question_OptionD" column="question_OptionD"/>
+        <result property="question_answer" column="question_answer"/>
+        <result property="question_parse" column="question_parse"/>
+    </resultMap>
+    <resultMap id="ResultMap" type="Question" extends="BaseMap">
+        <collection property="question_type" ofType="Question_Type">
+            <id property="question_type_id" column="question_type_id"/>
+            <result property="question_id" column="question_id(1)"/>
+            <result property="question_type" column="question_type"/>
+        </collection>
+    </resultMap>
+    <resultMap id="RichResultMap" type="Question" extends="BaseMap">
+        <collection property="question_type" ofType="Question_Type" javaType="java.util.List" column="question_id"
+                    select="queryByQuestion_Type_Id">
+            <id property="question_type_id" column="question_type_id"/>
+            <result property="question_id" column="question_id(1)"/>
+            <result property="question_type" column="question_type"/>
+        </collection>
+    </resultMap>
+    <resultMap id="Question_Type" type="Question_Type">
+        <id property="question_type_id" column="question_type_id"/>
+        <result property="question_id" column="question_id"/>
+        <result property="question_type" column="question_type"/>
+    </resultMap>
+    <insert id="addQuestion" parameterType="question">
+        <selectKey keyProperty="question_id" order="AFTER" resultType="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into question_bank
+        values(#{question_id},#{question_title},#{question_OptionA},#{question_OptionB},#{question_OptionC},#{question_OptionD}
+        ,#{question_answer},#{question_parse})
+    </insert>
+    <insert id="addQuestion_Type" parameterType="question_type">
+        insert into question_type values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.question_type_id},#{item.question_id},#{item.question_type})
+        </foreach>
+    </insert>
+    <delete id="deleteQuestion_Type" parameterType="int">
+        delete from question_type where question_id = #{question_id}
+    </delete>
+    <delete id="deleteQuestion" parameterType="int">
+        delete from question_bank where question_id = #{question_id}
+    </delete>
+    <update id="updateQuestion" parameterType="question">
+        update question_bank
+        <set>
+            <if test="question_title != null">
+                question_title = #{question_title},
+            </if>
+            <if test="question_OptionA != null">
+                question_OptionA = #{question_OptionA},
+            </if>
+            <if test="question_OptionB != null">
+                question_OptionB = #{question_OptionB},
+            </if>
+            <if test="question_OptionC != null">
+                question_OptionC = #{question_OptionC},
+            </if>
+            <if test="question_OptionD != null">
+                question_OptionD = #{question_OptionD},
+            </if>
+            <if test="question_answer != null">
+                question_answer = #{question_answer},
+            </if>
+            <if test="question_parse != null">
+                question_parse = #{question_parse}
+            </if>
+        </set>
+        <where>
+            <if test="question_id != 0">
+                question_id = #{question_id}
+            </if>
+        </where>
+    </update>
+    <select id="getQuestionAll" resultMap="RichResultMap">
+        select question_bank.*,question_type.question_type_id,question_type.question_type from question_bank left join
+        question_type on question_bank.question_id = question_type.question_id group by question_bank.question_id
+    </select>
+    <select id="getQuestionByQuestion_type" parameterType="java.lang.String" resultMap="RichResultMap">
+        select question_bank.*,question_type.question_type_id,question_type.question_type from question_bank left join
+         question_type on question_bank.question_id = question_type.question_id group by question_bank.question_id
+         having question_type = #{question_type}
+    </select>
+    <select id="queryByQuestion_Type_Id" parameterType="int" resultMap="Question_Type">
+        select * from question_type where question_id = #{question_id}
+    </select>
+    <select id="queryById" parameterType="int" resultMap="RichResultMap">
+        select question_bank.*,question_type.question_type_id,question_type.question_type from question_bank left join
+         question_type on question_bank.question_id = question_type.question_id group by question_bank.question_id
+         having question_bank.question_id = #{question_id}
+    </select>
+    <!--    从题库中随机选出10道题目-->
+    <select id="queryRandQuestionByQuestion_type" parameterType="java.lang.String" resultMap="RichResultMap">
+        SELECT question_bank.*,question_type from question_bank,question_type where question_bank.question_id
+         = question_type.question_id  GROUP BY question_bank.question_id HAVING
+         <foreach collection="list"  separator="or" item="question_type"  open="question_type = " close=" ">
+             #{question_type}
+         </foreach>
+         ORDER BY rand() LIMIT 10 ;
+    </select>
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.examMapper">
+    <resultMap id="BaseMap" type="Exam">
+        <id property="exam_id" column="exam_id"/>
+        <result property="userid" column="userid"/>
+        <result property="grade" column="grade"/>
+        <result property="completion_time" column="completion_time"/>
+    </resultMap>
+    <resultMap id="ResultMap" type="Exam" extends="BaseMap">
+        <collection property="exam_questions" ofType="Exam_question">
+            <id property="exam_question_id" column="exam_question_id"/>
+            <result property="exam_id" column="exam_id(1)"/>
+            <result property="question_id" column="question_id"/>
+            <result property="myanswer" column="myanswer"/>
+            <result property="status" column="status"/>
+        </collection>
+    </resultMap>
+    <resultMap id="RichResultMap" type="Exam" extends="BaseMap">
+        <collection property="exam_questions" ofType="Exam_question" javaType="java.util.List" column="exam_id"
+                    select="queryExam_questionById">
+            <id property="exam_question_id" column="exam_question_id"/>
+            <result property="exam_id" column="exam_id(1)"/>
+            <result property="question_id" column="question_id"/>
+            <result property="myanswer" column="myanswer"/>
+            <result property="status" column="status"/>
+        </collection>
+    </resultMap>
+    <resultMap id="exam_questionMap" type="Exam_question">
+        <id property="exam_question_id" column="exam_question_id"/>
+        <result property="exam_id" column="exam_id"/>
+        <result property="question_id" column="question_id"/>
+        <result property="myanswer" column="myanswer"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    <insert id="addExam" parameterType="exam">
+        <selectKey keyProperty="exam_id" order="AFTER" resultType="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into exam values (#{exam_id},#{userid},#{grade},#{completion_time})
+    </insert>
+    <insert id="addExam_questions" parameterType="exam_question">
+        insert into exam_question values 
+        <foreach collection="list"  separator="," index="index" item="item">
+            (#{item.exam_question_id},#{item.exam_id},#{item.question_id},#{item.myanswer},#{item.status})
+        </foreach>
+    </insert>
+    <delete id="deleteExam" parameterType="int">
+        delete from exam where exam_id = #{exam_id}
+    </delete>
+    <update id="updateExam" parameterType="exam">
+        update exam
+        <set>
+            <if test="grade != 0">
+               grade = #{grade},
+            </if>
+            <if test="completion_time != null">
+                completion_time = #{completion_time}
+            </if>
+        </set>
+        <where>
+            <if test="exam_id != 0">
+                exam_id = #{exam_id}
+            </if>
+        </where>
+    </update>
+    <update id="updateExam_questions" parameterType="exam_question">
+        update exam_question
+        <foreach collection="list" separator="," index="index" item="item">
+            <set>
+                <if test="item.myanswer != null">
+                    item.myanswer = #{item.myanswer},
+                </if>
+                <if test="item.status != null">
+                    item.status = #{item.status}
+                </if>
+            </set>
+            <where>
+                <if test="item.exam_question_id != 0">
+                    item.exam_question_id = #{item.exam_question_id}
+                </if>
+            </where>
+        </foreach>
+    </update>
+    <select id="getExamAll" resultMap="BaseMap">
+        select * from exam;
+    </select>
+    <select id="getExamAllByUserid" parameterType="java.lang.String" resultMap="BaseMap">
+        select * from exam where userid = #{userid}
+    </select>
+    <select id="queryExamById" parameterType="int" resultMap="RichResultMap">
+        select exam.*,exam_question.exam_question_id,exam_question.question_id,exam_question.myanswer,exam_question.status from 
+        exam left join exam_question on exam.exam_id = exam_question.exam_id group by exam.exam_id 
+        having exam.exam_id = #{exam.exam_id}
+    </select>
+    <select id="queryExam_questionById" parameterType="int" resultMap="exam_questionMap">
+        select * from exam_question where exam_id = #{exam_id}
+    </select>
+    <select id="queryExam_questionByQuestion_id" parameterType="int" resultMap="exam_questionMap">
+        select * from exam_question where question_id = #{question_id} group by question_id
+    </select>
+</mapper>

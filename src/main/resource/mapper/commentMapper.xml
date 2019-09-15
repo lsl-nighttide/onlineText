@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.commentMapper">
+    <resultMap id="BaseMap" type="Comment">
+        <id property="comment_id" column="comment_id"/>
+        <result property="postid" column="postid"/>
+        <result property="commenter_id" column="commenter_id"/>
+        <result property="comment_content" column="comment_content"/>
+        <result property="comment_creattime" column="comment_creattime"/>
+    </resultMap>
+    <resultMap id="ResultMap" type="Comment" extends="BaseMap">
+        <association property="user" javaType="user">
+            <id property="userid" column="userid"/>
+            <result property="username" column="username"/>
+            <result property="password" column="password"/>
+            <result property="sex" column="sex"/>
+            <result property="phone" column="phone"/>
+            <result property="address" column="address"/>
+            <result property="introduce" column="introduce"/>
+            <result property="pic" column="pic"/>
+            <result property="permissions" column="permissions"/>
+        </association>
+    </resultMap>
+    <insert id="addComment" parameterType="comment">
+        insert into comment values (#{comment_id},#{postid},#{commenter_id},#{comment_content},#{comment_creattime})
+    </insert>
+    <delete id="deleteComment" parameterType="java.lang.Integer">
+        delete from comment where comment_id = #{comment_id}
+    </delete>
+    <select id="getCommentAll" resultMap="ResultMap">
+        select comment.*,user.username from comment,user where commenter_id = userid
+    </select>
+    <select id="queryByPostid" resultMap="ResultMap" parameterType="java.lang.Integer">
+        select comment.*,user.username from comment,user where commenter_id = userid and postid = #{postid}
+    </select>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.postMapper">
+    <resultMap id="BaseMap" type="Post">
+        <id property="postid" column="postid"/>
+        <result property="question_id" column="question_id"/>
+        <result property="posterid" column="posterid"/>
+        <result property="post_content" column="post_content"/>
+        <result property="post_creattime" column="post_creattime"/>
+        <result property="commentnum" column="commentnum"/>
+    </resultMap>
+    <resultMap id="ResultMap" type="Post" extends="BaseMap">
+        <association property="user" javaType="user">
+            <id property="userid" column="userid"/>
+            <result property="username" column="username"/>
+            <result property="password" column="password"/>
+            <result property="sex" column="sex"/>
+            <result property="phone" column="phone"/>
+            <result property="address" column="address"/>
+            <result property="introduce" column="introduce"/>
+            <result property="pic" column="pic"/>
+            <result property="permissions" column="permissions"/>
+        </association>
+    </resultMap>
+    <insert id="addPost" parameterType="post">
+        insert into post values (#{postid},#{question_id},#{posterid},#{post_content},#{post_creattime},#{commentnum})
+    </insert>
+    <delete id="deletePost" parameterType="java.lang.Integer">
+        delete from post where postid = #{postid}
+    </delete>
+    <update id="updatePost" parameterType="post">
+        update post
+        <set>
+            <if test="commentnum != 0">
+                commentnum = #{commentnum}
+            </if>
+        </set>
+        <where>
+            <if test="postid != 0">
+                postid = #{postid}
+            </if>
+        </where>
+    </update>
+    <select id="getPostAll" resultMap="ResultMap">
+        select post.*,user.username from post,user where userid = posterid
+    </select>
+    <select id="queryByQuestion_Id" parameterType="java.lang.Integer" resultMap="ResultMap">
+        select post.*,user.username,user.pic from post,user where userid = posterid and post.question_id = #{question_id}
+    </select>
+    <select id="queryByPostid" parameterType="java.lang.Integer" resultMap="BaseMap">
+        select * from post where postid= #{postid}
+    </select>
+</mapper>

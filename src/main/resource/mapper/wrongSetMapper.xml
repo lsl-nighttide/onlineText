@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper1.wrongSetMapper">
+    <resultMap id="BaseMap" type="WrongSet">
+        <id property="wrongSet_id" column="wrongSet_id"/>
+        <result property="wrongSet_question_id" column="wrongSet_question_id"/>
+        <result property="myAnswer" column="myAnswer"/>
+        <result property="userid" column="userid"/>
+    </resultMap>
+    <insert id="addWrongSet" parameterType="wrongset">
+        insert into wrongset values
+        <foreach collection="list" item="item" index="index" separator=",">
+         (#{item.wrongSet_id},#{item.wrongSet_question_id},#{item.myAnswer},#{item.userid})
+        </foreach>
+    </insert>
+    <delete id="deleteWrongSet" parameterType="int">
+        delete from wrongset where wrongSet_id = #{wrongSet_id}
+    </delete>
+    <select id="getWrongSetAll" resultMap="BaseMap">
+        select * from wrongset
+    </select>
+    <select id="queryWrongSetById" resultMap="BaseMap">
+        select * from wrongset where wrongSet_question_id = #{wrongSet_question_id}
+    </select>
+    <select id="queryWrongSetByUserid" parameterType="java.lang.String" resultMap="BaseMap">
+        select * from wrongset where userid = #{userid}
+    </select>
+</mapper>
