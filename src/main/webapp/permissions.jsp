@@ -278,7 +278,7 @@
             result.map.pageinfo.total + "条记录");
         currentPage = result.map.pageinfo.pageNum;
     }
-
+// 点击提升按钮
     $("table>tbody").on("click",".improve_btn",function () {
         var permissions;
         var identity = $(this).parents("tr").find("td:eq(6)").html();
@@ -312,6 +312,7 @@
             }
         })
     });
+    // 点击降低按钮
     $("table>tbody").on("click",".reduce_btn",function () {
         var permissions = 0;
         var userid = $(this).parents("tr").find("td:eq(0)").html();

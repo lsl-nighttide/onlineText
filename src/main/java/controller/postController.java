@@ -18,6 +18,11 @@ public class postController {
     @Autowired
     private postService postService;
 
+    /**
+     * 得到所有post
+     * @param pn
+     * @return
+     */
     @RequestMapping("/getPostAll")
     @ResponseBody
     public Msg getPostAll(@RequestParam(value = "pn", defaultValue = "1") Integer pn) {
@@ -28,6 +33,12 @@ public class postController {
         return Msg.success().add("pageinfo", pageInfo);
     }
 
+    /**
+     * 根据试题id查询帖子
+     * @param pn
+     * @param content
+     * @return
+     */
     @RequestMapping("/queryByQuestion_Id")
     @ResponseBody
     public Msg queryByQuestion_Id(@RequestParam(value = "pn", defaultValue = "1") Integer pn, String content) {
@@ -40,6 +51,11 @@ public class postController {
         return Msg.success().add("pageinfo", pageInfo);
     }
 
+    /**
+     * 根据帖子id删除帖子
+     * @param postid
+     * @return
+     */
     @RequestMapping("/deletePost")
     @ResponseBody
     public Msg deletePost(int postid) {

@@ -81,7 +81,7 @@
     $(function () {
         to_page(1)
     });
-
+// 分页函数
     function to_page(pn) {
         var userid = ${user.userid};
         $.ajax({
@@ -95,7 +95,7 @@
             }
         })
     }
-
+// 创建exam信息
     function build_exam(result) {
         $(".exam-box").empty();
         var exams = result.map.pageinfo.list;

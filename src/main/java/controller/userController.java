@@ -31,11 +31,11 @@ public class userController {
     @Autowired
     private userService userService;
 
-    @RequestMapping("/zgz")
-    public String ceshi() {
-        return "login";
-    }
-
+    /**
+     * 通过userid得到user
+     * @param userid
+     * @return
+     */
     @RequestMapping("/getuser")
     @ResponseBody
     public Msg getUser(String userid) {
@@ -44,33 +44,30 @@ public class userController {
         return Msg.success().add("user", user);
     }
 
+    /**
+     * 根据权限得到user
+     * @param pn
+     * @param permissions
+     * @return
+     */
     @RequestMapping("/getuserAll")
     @ResponseBody
-    public Msg getUserAll(@RequestParam(value = "pn", defaultValue = "1") Integer pn, Integer permissions) {
+    public Msg queryByPermissions(@RequestParam(value = "pn", defaultValue = "1") Integer pn, Integer permissions) {
         PageHelper.startPage(pn, 7);
         List<User> list = userService.getAllByPermissions(permissions);
         System.out.println(list);
-       /* for (Iterator iterator = list.iterator(); iterator.hasNext(); ) {
-            User user = (User) iterator.next();
-            int k = 0;
-            for (Iterator iterator1 = list.iterator(); iterator1.hasNext(); ) {
-                User user1 = (User) iterator1.next();
-                if (user.equals(user1)) {
-                    if (k == 1) {
-                        iterator.remove();
-                        break;
-                    }
-                    k++;
-                }
-            }
-        }*/
         PageInfo pageInfo = new PageInfo(list, 5);
         return Msg.success().add("pageinfo", pageInfo);
     }
 
+    /**
+     * 得到所有user
+     * @param pn
+     * @return
+     */
     @RequestMapping("/getAll")
     @ResponseBody
-    public Msg queryByPermissions(@RequestParam(value = "pn", defaultValue = "1") Integer pn) {
+    public Msg getAll(@RequestParam(value = "pn", defaultValue = "1") Integer pn) {
         PageHelper.startPage(pn, 7);
         List<User> list = userService.getAll();
         System.out.println(list);
@@ -78,9 +75,14 @@ public class userController {
         return Msg.success().add("pageinfo", pageInfo);
     }
 
+    /**
+     * 登录
+     * @param user
+     * @param request
+     * @return
+     */
     @RequestMapping("/login")
     public String login(User user, HttpServletRequest request) {
-        System.out.println(user);
         User user1 = userService.login(user.getUsername(), user.getPassword());
         System.out.println(user1);
         request.getSession().setAttribute("user", user1);
@@ -90,10 +92,14 @@ public class userController {
         else return "redirect:index.jsp";
     }
 
+    /**
+     * 注册
+     * @param user
+     * @return
+     */
     @RequestMapping("/register")
     @ResponseBody
     public Msg register(User user) {
-        System.out.println(user);
         String maxUserid = userService.queryMaxUserid(0);
         System.out.println(maxUserid);
         int id = Integer.parseInt(maxUserid)+1;
@@ -108,12 +114,17 @@ public class userController {
             return Msg.fail();
     }
 
+    /**
+     * 管理员更新
+     * @param user
+     * @param userid
+     * @param arr
+     * @param request
+     * @return
+     */
     @RequestMapping("/updateAdmin")
     @ResponseBody
     public Msg updateAdmin(User user, String userid, @RequestParam("arr") List<String> arr, HttpServletRequest request) {
-        System.out.println(user);
-        System.out.println(userid);
-        System.out.println(arr);
         int result = userService.updateUser(user);
         System.out.println(result);
         int result1 = userService.deleteMajorType(userid);
@@ -133,12 +144,19 @@ public class userController {
         return Msg.success().add("admin", user);
     }
 
+    /**
+     * 上传头像
+     * @param fileload
+     * @param userid
+     * @param request
+     * @return
+     * @throws IOException
+     * @throws ServletException
+     */
     @RequestMapping("/upload")
     @ResponseBody
     public Msg upload(@RequestParam(value = "fileload", required = false) MultipartFile fileload, String userid, HttpServletRequest request)
             throws IOException, ServletException {
-        System.out.println(userid);
-        System.out.println(fileload);
         String filename = fileload.getOriginalFilename();
         System.out.println(filename);
 //        fileload.transferTo(new File("E:/picture/" + filename));
@@ -153,6 +171,11 @@ public class userController {
         return Msg.success().add("img", user);
     }
 
+    /**
+     * 删除user
+     * @param userid
+     * @return
+     */
     @RequestMapping("/deleteUser")
     @ResponseBody
     public Msg deleteUser(String userid) {
@@ -162,6 +185,11 @@ public class userController {
         return Msg.success();
     }
 
+    /**
+     * 批量删除user
+     * @param arr
+     * @return
+     */
     @RequestMapping("/deleteUsers")
     @ResponseBody
     public Msg deleteUsers(@RequestParam(value = "arr") List arr) {
@@ -171,11 +199,16 @@ public class userController {
         return Msg.success();
     }
 
+    /**
+     * 更新user权限
+     * @param userid
+     * @param permissions
+     * @param request
+     * @return
+     */
     @RequestMapping("/updatePermissions")
     @ResponseBody
     public Msg updatePermissions(String userid, int permissions, HttpServletRequest request) {
-        System.out.println(userid);
-        System.out.println(permissions);
         User user1 = new User();
         if (permissions == 2) {
             List<User> list = userService.getAllByPermissions(2);
@@ -192,6 +225,12 @@ public class userController {
         return Msg.success().add("user", user1);
     }
 
+    /**
+     * 更新密码
+     * @param newPassword
+     * @param userid
+     * @return
+     */
     @RequestMapping("/updatePwd")
     @ResponseBody
     public Msg updatePwd(String newPassword, String userid) {
@@ -205,6 +244,11 @@ public class userController {
         return Msg.success();
     }
 
+    /**
+     * 退出登录
+     * @param request
+     * @return
+     */
     @RequestMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(true);
@@ -216,40 +260,4 @@ public class userController {
         } else
             return "login";
     }
-   /* @RequestMapping("/isLogin")
-    @ResponseBody
-    public Msg isLogin(HttpServletRequest request){
-        User user = (User) request.getSession().getAttribute("user");
-        System.out.println("首页的user："+user);
-        if(user != null){
-            return Msg.success().add("user",user);
-        }else
-            return Msg.fail();
-    }
-    @RequestMapping("/updateUser")
-    @ResponseBody
-    public Msg updateUser(User user,@RequestParam(value = "arr") List<String> arr,HttpServletRequest request){
-        System.out.println(user);
-        System.out.println(arr);
-        int result = userService.updateUser(user);
-        System.out.println(result);
-        int result1 = userService.deleteMajorType(user.getUserid());
-        System.out.println(result1);
-        List<Major> list = new ArrayList();
-        for (String str : arr) {
-            Major major = new Major();
-            major.setMajorType(str);
-            major.setUserid(user.getUserid());
-            list.add(major);
-        }
-        System.out.println(list);
-        int result2 = 0;
-        if(list!=null)
-         result2= userService.insertMajorType(list);
-        System.out.println(result2);
-        user = userService.queryById(user.getUserid());
-        request.getSession().setAttribute("user", user);
-        return Msg.success();
-    }
-*/
 }

@@ -17,7 +17,7 @@ import java.util.List;
 public class commentController {
     @Autowired
     private commentService commentService;
-
+//得到所有comment
     @RequestMapping("/getCommentAll")
     @ResponseBody
     public Msg getCommentAll(@RequestParam(value = "pn",defaultValue = "1") Integer pn) {
@@ -27,6 +27,7 @@ public class commentController {
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+//    通过postid进行查询
     @RequestMapping("/queryByPostid")
     @ResponseBody
     public Msg queryByPostid(@RequestParam(value = "pn",defaultValue = "1") Integer pn,String content){
@@ -38,6 +39,12 @@ public class commentController {
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 根据id删除评论
+     * @param comment_id
+     * @return
+     */
     @RequestMapping("/deleteComment")
     @ResponseBody
     public Msg deleteComment(int comment_id){

@@ -34,13 +34,16 @@
         .dl-horizontal-profile > dt {
             padding: 20px 0;
         }
-        .profile-name{
+
+        .profile-name {
             border: none;
         }
+
         dd {
             margin-left: 158px;
         }
-        .a_hobby{
+
+        .a_hobby {
             line-height: 30px;
             display: inline-block;
             border: 1px solid #d1e8ff;
@@ -50,7 +53,8 @@
             border-radius: 16px;
             margin-bottom: 5px;
         }
-        .select{
+
+        .select {
             background-color: skyblue;
         }
     </style>
@@ -71,7 +75,7 @@
 </body>
 </html>
 <script>
-    var arr =new Array();
+    var arr = new Array();
     $(function () {
         var userid = ${user.userid};
         $.ajax({
@@ -115,25 +119,27 @@
         var hr = $("<hr>");
         $("<div></div>").append(h2).append(hr).append(dl).appendTo(".profile-name");
     }
-$(".profile-name").on("click","#update_btn",function () {
-    console.log($(this));
-    $(this).parents(".profile-name").find(".dl-horizontal-profile").wrap("<form id='pre_form'></form>");
-    var save_btn = $("<button></button>").addClass("btn pull-right").css("margin", "0 15px 0 0").append("保存");
-    save_btn.attr("id", "save_btn");
-    $(this).attr("id", "cancel_btn");
-    $(this).html("取消");
-    $(this).parent("h2").append(save_btn);
-    console.log($(this).parents(".profile-name").find(".dl-horizontal-profile dd"));
-    $(this).parents(".profile-name").find(".dl-horizontal-profile dd").each(function () {
-        var content = $(this).html();
-        $(this).empty();
-        $(this).append("<div contenteditable='true'>" + content + "</div>");
+// 点击修改资料按钮
+    $(".profile-name").on("click", "#update_btn", function () {
+        console.log($(this));
+        $(this).parents(".profile-name").find(".dl-horizontal-profile").wrap("<form id='pre_form'></form>");
+        var save_btn = $("<button></button>").addClass("btn pull-right").css("margin", "0 15px 0 0").append("保存");
+        save_btn.attr("id", "save_btn");
+        $(this).attr("id", "cancel_btn");
+        $(this).html("取消");
+        $(this).parent("h2").append(save_btn);
+        console.log($(this).parents(".profile-name").find(".dl-horizontal-profile dd"));
+        $(this).parents(".profile-name").find(".dl-horizontal-profile dd").each(function () {
+            var content = $(this).html();
+            $(this).empty();
+            $(this).append("<div contenteditable='true'>" + content + "</div>");
+        });
+        console.log($(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(0)"));
+        $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(0) div").removeAttr("contenteditable");
+        $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(6)").empty();
+        build_hobby();
     });
-    console.log($(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(0)"));
-    $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(0) div").removeAttr("contenteditable");
-    $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(6)").empty();
-    build_hobby();
-});
+// 创建爱好信息
     function build_hobby() {
         console.log($(".dl-horizontal-profile dd:eq(6) div"));
         var java = $("<a></a>").addClass("a_hobby").append("java");
@@ -144,48 +150,51 @@ $(".profile-name").on("click","#update_btn",function () {
         var python = $("<a></a>").addClass("a_hobby").append("python");
         var vue = $("<a></a>").addClass("a_hobby").append("vue");
         var jquery = $("<a></a>").addClass("a_hobby").append("jquery");
-        $("<div></div>").css("width","200px").append(java).append(html5).append(javascript).append(css3).append(bootstrap3)
+        $("<div></div>").css("width", "200px").append(java).append(html5).append(javascript).append(css3).append(bootstrap3)
             .append(python).append(vue).append(jquery).appendTo(".dl-horizontal-profile dd:eq(6)");
     }
-    $(".profile-name").on("click",".a_hobby",function () {
+
+    $(".profile-name").on("click", ".a_hobby", function () {
         var item = $(this).html();
-        if($(this).hasClass("select")){
+        if ($(this).hasClass("select")) {
             $(this).removeClass("select");
-            arr = $.grep(arr,function (value) {
-               return  value != item ;
+            arr = $.grep(arr, function (value) {
+                return value != item;
             })
-        }else {
+        } else {
             $(this).addClass("select");
             arr.push(item);
         }
     });
-    $(".profile-name").on("click","#cancel_btn",function () {
+    // 点击取消按钮
+    $(".profile-name").on("click", "#cancel_btn", function () {
         window.location.reload();
     });
-    $(".profile-name").on("click","#save_btn",function () {
-        var userid =  $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(0)>div").html();
+    // 点击保存按钮
+    $(".profile-name").on("click", "#save_btn", function () {
+        var userid = $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(0)>div").html();
         var username = $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(1)>div").html();
         var sex = $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(2)>div").html();
         var phone = $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(3)>div").html();
         var address = $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(4)>div").html();
         var introduce = $(this).parents(".profile-name").find(".dl-horizontal-profile dd:eq(5)>div").html();
         var formdata = new FormData($("#form")[0]);
-        formdata.set("userid",userid);
-        formdata.set("username",username);
-        formdata.set("sex",sex);
-        formdata.set("phone",phone);
-        formdata.set("address",address);
-        formdata.set("introduce",introduce);
-        formdata.set("arr",arr);
+        formdata.set("userid", userid);
+        formdata.set("username", username);
+        formdata.set("sex", sex);
+        formdata.set("phone", phone);
+        formdata.set("address", address);
+        formdata.set("introduce", introduce);
+        formdata.set("arr", arr);
         $.ajax({
-            url:"${pageContext.request.contextPath}/updateUser",
-            data:formdata,
-            type:"post",
-            processData:false,
-            contentType:false,
-            success:function (result) {
+            url: "${pageContext.request.contextPath}/updateUser",
+            data: formdata,
+            type: "post",
+            processData: false,
+            contentType: false,
+            success: function (result) {
                 console.log(result.msg);
-                 parent.location.reload();
+                parent.location.reload();
             }
         })
     });

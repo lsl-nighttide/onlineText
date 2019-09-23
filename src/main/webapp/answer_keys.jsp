@@ -327,7 +327,7 @@
             location.href = "${pageContext.request.contextPath}/login.jsp"
         });
     });
-
+// 创建试题信息
     function showQuestion(id) {
         if (activeQuestion != undefined) {
             $("#ques" + activeQuestion).removeClass("select_ques");
@@ -479,7 +479,7 @@
             }
         })
     }
-
+//创建post信息
     function build_post(post) {
         $(".post_area").empty();
         var post_title = "<div><h1 style='font-size: 16px;margin-bottom: 20px'><span>" + "共有" + post_size + "条帖子" + "</span>" +
@@ -677,7 +677,7 @@
             }
         })
     }
-
+// 创建comment信息
     function build_Comment(result) {
         console.log("`111111");
         var comment = result.map.pageinfo.list;

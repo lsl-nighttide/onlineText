@@ -385,6 +385,7 @@
             }
         })
     });
+    // 点击×触发的事件
     $("#build_Questioninfo").on("click", ".entypo-cancel", function () {
         console.log($(this).parents(".title-alt").find("#question_id").html());
         var question_id = $(this).parents(".title-alt").find("#question_id").html();

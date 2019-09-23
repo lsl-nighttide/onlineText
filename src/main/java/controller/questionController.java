@@ -21,6 +21,11 @@ public class questionController {
     @Autowired
     private questionService questionService;
 
+    /**
+     * 得到所有试题
+     * @param pn
+     * @return
+     */
     @RequestMapping("/getQuestionAll")
     @ResponseBody
     public Msg getAll(@RequestParam(value = "pn",defaultValue = "1") Integer pn){
@@ -30,17 +35,18 @@ public class questionController {
         PageInfo pageInfo = new PageInfo(list,5);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 更新试题
+     * @param question
+     * @param question_type_str
+     * @return
+     */
     @RequestMapping("/updateQuestion")
     @ResponseBody
     public Msg updateQuestion(Question question,String question_type_str){
-        System.out.println("接受过来的question："+question);
-        System.out.println("接受过来的question_type:"+question_type_str);
-/*        System.out.println(question_id_String);
-        int question_id = Integer.parseInt(question_id_String);
-        question.setQuestion_id(question_id);*/
         String[] arr = question_type_str.split(" ");
         List<String> list = Arrays.asList(arr);
-        System.out.println("转化的"+list);
         int result = questionService.deleteQuestion_Type(question.getQuestion_id());
         System.out.println(result);
         List<Question_Type> list1 = new ArrayList<>();
@@ -56,6 +62,12 @@ public class questionController {
         System.out.println(result2);
         return Msg.success();
     }
+
+    /**
+     * 删除试题
+     * @param question_id
+     * @return
+     */
     @RequestMapping("/deleteQuestion")
     @ResponseBody
     public Msg deleteQuestion(Integer question_id){
@@ -64,11 +76,17 @@ public class questionController {
         System.out.println(result);
         return Msg.success();
     }
+
+    /**
+     * 根据试题id查询
+     * @param pn
+     * @param content
+     * @return
+     */
     @RequestMapping("/queryById")
     @ResponseBody
     public Msg queryById(@RequestParam(value = "pn",defaultValue = "1") Integer pn , String content){
         PageHelper.startPage(pn,2);
-        System.out.println(content);
         int question_id = Integer.parseInt(content);
         Question question = questionService.queryById(question_id);
         List<Question> list = new ArrayList();
@@ -76,25 +94,34 @@ public class questionController {
         PageInfo pageInfo  = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 根据试卷类型查询
+     * @param pn
+     * @param content
+     * @return
+     */
     @RequestMapping("/queryByType")
     @ResponseBody
     public Msg queryByType(@RequestParam(value = "pn",defaultValue = "1") Integer pn , String content){
         PageHelper.startPage(pn,2);
-        System.out.println(content);
         List<Question> list = questionService.getQuestionByQuestion_type(content);
-        System.out.println(list);
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 增加试题
+     * @param question
+     * @param arr
+     * @return
+     */
     @RequestMapping("/addQuestion")
     @ResponseBody
     public Msg addQuestion(Question question,@RequestParam(value = "arr") List<String> arr){
-        System.out.println(question);
-        System.out.println(arr);
         int result = questionService.addQuestion(question);
         System.out.println(result);
         int question_id = question.getQuestion_id();
-        System.out.println(question_id);
         List<Question_Type> list = new ArrayList<>();
         for(String str : arr){
             Question_Type question_type = new Question_Type();

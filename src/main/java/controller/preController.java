@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 负责前台页面的controller
+ */
 @Controller
 public class preController {
     @Autowired
@@ -36,6 +39,11 @@ public class preController {
     @Autowired
     private commentService commentService;
 
+    /**
+     * 判断是否登录
+     * @param request
+     * @return
+     */
     @RequestMapping("/isLogin")
     @ResponseBody
     public Msg isLogin(HttpServletRequest request) {
@@ -47,6 +55,13 @@ public class preController {
             return Msg.fail();
     }
 
+    /**
+     * 更新用户信息
+     * @param user
+     * @param arr
+     * @param request
+     * @return
+     */
     @RequestMapping("/updateUser")
     @ResponseBody
     public Msg updateUser(User user, @RequestParam(value = "arr") List<String> arr, HttpServletRequest request) {
@@ -73,6 +88,12 @@ public class preController {
         return Msg.success();
     }
 
+    /**
+     * 专项练习，得到10道随机试题
+     * @param arr
+     * @param request
+     * @return
+     */
     @RequestMapping("/special_practise")
     @ResponseBody
     public Msg special_practise(@RequestParam(value = "arr") List<String> arr, HttpServletRequest request) {
@@ -85,6 +106,11 @@ public class preController {
         return Msg.success();
     }
 
+    /**
+     * 用来得到session，存放10道题的session
+     * @param request
+     * @return
+     */
     @RequestMapping("/getQuestionSession")
     @ResponseBody
     public Msg getSession(HttpServletRequest request) {
@@ -93,6 +119,11 @@ public class preController {
         return Msg.success().add("select_question", list);
     }
 
+    /**
+     * 判断是否被收藏
+     * @param question_id
+     * @return
+     */
     @RequestMapping("/isCollection")
     @ResponseBody
     public Msg isCollection(Integer question_id) {
@@ -103,18 +134,22 @@ public class preController {
             return Msg.success();
     }
 
+    /**
+     * 提交试题，试卷表的增加、试卷试题表的增加、收藏表的增加、错题表的增加
+     * @param checkQues
+     * @param collection
+     * @param request
+     * @return
+     */
     @RequestMapping("/submitQuestion")
     @ResponseBody
     public Msg submitQuestion(@RequestParam(value = "checkQues") List<String> checkQues, @RequestParam(value = "collection")
             List<Integer> collection, HttpServletRequest request) {
         List<Question> questions = (List<Question>) request.getSession().getAttribute("select_question");
-        System.out.println(questions);
-        System.out.println(checkQues);
-        System.out.println(collection);
         User user = (User) request.getSession().getAttribute("user");
         Date d = new Date();
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-        String completion_time = date.format(d);
+        String completion_time = date.format(d); //得到当前时间
         int grade = 0;
         Exam exam = new Exam();
         exam.setUserid(user.getUserid());
@@ -131,7 +166,7 @@ public class preController {
             exam_question.setExam_id(exam_id);
             exam_question.setQuestion_id(questions.get(i).getQuestion_id());
             exam_question.setMyanswer(checkQues.get(i));
-            if ((checkQues.get(i)).equals(questions.get(i).getQuestion_answer())) {
+            if ((checkQues.get(i)).equals(questions.get(i).getQuestion_answer())) {//判断答案是否正确
                 grade += 10;
                 exam_question.setStatus(1);
             } else {
@@ -168,6 +203,13 @@ public class preController {
         }
         return Msg.success().add("exam", exam1);
     }
+
+    /**
+     * 进行页面跳转，并将试卷试题用session存放
+     * @param exam_id
+     * @param request
+     * @return
+     */
     @RequestMapping("/answer_key")
     public String answer_key(Integer exam_id, HttpServletRequest request){
         Exam exam = examService.queryExamById(exam_id);
@@ -177,6 +219,12 @@ public class preController {
         request.getSession().setAttribute("exam_questions",exam_questions);
         return "answer_keys";
     }
+
+    /**
+     * 得到存放的试卷试题session
+     * @param request
+     * @return
+     */
     @RequestMapping("/getExam_questionsSession")
     @ResponseBody
     public Msg getExamSession(HttpServletRequest request){
@@ -184,6 +232,12 @@ public class preController {
         System.out.println("在解析界面:"+exam_questions);
         return Msg.success().add("exam_questions",exam_questions);
     }
+
+    /**
+     * 根据试题id得到试题
+     * @param question_id
+     * @return
+     */
     @RequestMapping("/getQuestion")
     @ResponseBody
     public Msg getQuestion(Integer question_id){
@@ -191,6 +245,13 @@ public class preController {
         Question question = questionService.queryById(question_id);
         return Msg.success().add("question",question);
     }
+
+    /**
+     * 根据试题id得到帖子
+     * @param pn
+     * @param question_id
+     * @return
+     */
     @RequestMapping("/getPost")
     @ResponseBody
     public Msg getPost(@RequestParam(value = "pn",defaultValue = "1")Integer pn, Integer question_id){
@@ -200,6 +261,13 @@ public class preController {
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 根据帖子id得到comment
+     * @param pn
+     * @param postid
+     * @return
+     */
     @RequestMapping("/getComment")
     @ResponseBody
     public Msg getComment(@RequestParam(value = "pn",defaultValue = "1")Integer pn,Integer postid){
@@ -209,6 +277,12 @@ public class preController {
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 增加帖子
+     * @param post
+     * @return
+     */
     @RequestMapping("/addPost")
     @ResponseBody
     public Msg addPost(Post post){
@@ -221,6 +295,12 @@ public class preController {
         System.out.println("插入帖子结果:"+result);
         return Msg.success();
     }
+
+    /**
+     * 得到帖子数
+     * @param question_id
+     * @return
+     */
     @RequestMapping("/getPostLength")
     @ResponseBody
     public Msg getPostLength(Integer question_id){
@@ -229,6 +309,12 @@ public class preController {
         System.out.println("帖子数:"+size);
         return Msg.success().add("size",size);
     }
+
+    /**
+     * 增加评论
+     * @param comment
+     * @return
+     */
     @RequestMapping("/addComment")
     @ResponseBody
     public Msg addComment(Comment comment){
@@ -246,6 +332,13 @@ public class preController {
         System.out.println(result2);
         return Msg.success();
     }
+
+    /**
+     * 得到所有已做完试卷
+     * @param pn
+     * @param userid
+     * @return
+     */
     @RequestMapping("/getExamAll")
     @ResponseBody
     public Msg getExamAll(@RequestParam(value = "pn",defaultValue = "1")Integer pn,String userid){
@@ -254,6 +347,13 @@ public class preController {
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 得到所有收藏的试题
+     * @param pn
+     * @param userid
+     * @return
+     */
     @RequestMapping("/getCollectionAll")
     @ResponseBody
     public Msg getCollectionAll(@RequestParam(value = "pn",defaultValue = "1")Integer pn,String userid){
@@ -262,6 +362,13 @@ public class preController {
         PageInfo pageInfo = new PageInfo(list,3);
         return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 跳转到试题详情页面，并存放试题用session
+     * @param question_id
+     * @param request
+     * @return
+     */
     @RequestMapping("/questionDetails")
     public String questionDetails(Integer question_id,HttpServletRequest request){
         System.out.println(question_id);
@@ -269,18 +376,37 @@ public class preController {
         request.getSession().setAttribute("question",question);
         return "questionDetails";
     }
+
+    /**
+     * 得到试题session
+     * @param request
+     * @return
+     */
     @RequestMapping("/getquestionSession")
     @ResponseBody
     public Msg getquestionSession(HttpServletRequest request){
         Question question = (Question) request.getSession().getAttribute("question");
         return Msg.success().add("question",question);
     }
+
+    /**
+     * 根据试卷id，得到试卷中的试题
+     * @param question_id
+     * @return
+     */
     @RequestMapping("getExam_question")
     @ResponseBody
     public Msg getExam_quesiton(Integer question_id){
         Exam_question exam_question = examService.queryExam_questionByQuestion_id(question_id);
         return Msg.success().add("exam_question",exam_question);
     }
+
+    /**
+     * 得到所有错题
+     * @param pn
+     * @param userid
+     * @return
+     */
     @RequestMapping("/getWrongSet")
     @ResponseBody
     public Msg getWrongSet(@RequestParam(value = "pn",defaultValue = "1")Integer pn,String userid){
@@ -289,6 +415,12 @@ public class preController {
        PageInfo pageInfo = new PageInfo(list,3);
        return Msg.success().add("pageinfo",pageInfo);
     }
+
+    /**
+     * 销毁user  session，达到退出登录的目的
+     * @param request
+     * @return
+     */
     @RequestMapping("/invalidate")
     @ResponseBody
     public Msg invalidate(HttpServletRequest request){

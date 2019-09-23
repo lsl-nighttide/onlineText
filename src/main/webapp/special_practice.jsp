@@ -231,6 +231,7 @@
     $("#login").click(function () {
         location.href = "${pageContext.request.contextPath}/login.jsp"
     });
+    // 鼠标移入事件
     $("#confirm_btn").mouseenter(function () {
         console.log($("input"));
         arr = new Array();

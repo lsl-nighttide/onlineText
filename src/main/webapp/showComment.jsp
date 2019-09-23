@@ -241,6 +241,7 @@
             }
         })
     });
+    // 键盘输入事件
     $("#searchComment").keydown(function (event) {
         console.log(event.keyCode);
         if(event.keyCode == 13){

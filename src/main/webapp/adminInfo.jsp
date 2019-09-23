@@ -334,6 +334,7 @@ To change this template use File | Settings | File Templates.-->
             }
         })
     });
+    // 点击更新按钮
     $(".profile-name").on("click", "#update_btn", function () {
         console.log("111");
         reset_form("#userUpdateModal form");
@@ -343,6 +344,7 @@ To change this template use File | Settings | File Templates.-->
         console.log($(".modal"));
 
     });
+    //当鼠标移入到模态框的保存按钮
     $(".modal").on("mouseenter", "#user_save_btn", function () {
         arr = new Array();
         var items = $("input[name='major']");
@@ -354,6 +356,7 @@ To change this template use File | Settings | File Templates.-->
         }
         console.log(arr);
     });
+    // 点击模态框的保存按钮
     $("#userUpdateModal").on("click", "#user_save_btn", function () {
         console.log($("#userUpdateModal form").serialize());
         var userid = ${user.userid};
@@ -369,12 +372,11 @@ To change this template use File | Settings | File Templates.-->
                 var admin = result.map.admin;
                 console.log(admin);
                 $("#userUpdateModal").modal('hide');
-                // 再次点击没有用，点别的按钮有用
                 parent.location.reload();
             }
         })
     });
-
+//创建用户信息
     function build_info(result) {
         console.log(result);
         $(".profile-name").empty();
@@ -405,7 +407,7 @@ To change this template use File | Settings | File Templates.-->
         var hr = $("<hr>");
         $("<div></div>").append(h2).append(hr).append(dl).appendTo(".profile-name");
     }
-
+// 点击上传头像按钮
     $("#upload_btn").click(function () {
         console.log($("dl dd").eq(0).prop("innerText"));
         var userid = $("dl dd").eq(0).prop("innerText");
@@ -439,6 +441,7 @@ To change this template use File | Settings | File Templates.-->
         };
         console.log(file);
     });
+    //点击上传头像模态框的保存按钮
     $("#img_save_btn").click(function () {
         var userid = $("dl dd").eq(0).prop("innerText");
         var formdata = new FormData($("#upload_form")[0]);

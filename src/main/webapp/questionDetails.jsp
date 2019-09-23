@@ -346,6 +346,7 @@
                 }
             })
         }
+        // 收藏按钮
         $(".text-left").empty();
         var unHeart = "<div style='color:#999999;'id='unHeart" + activeQuestion + "' onclick='clickCollection(this)'>" +
             "<span class='glyphicon glyphicon-heart-empty'></span> <span>" + "收藏本题" + "</span></div>";
@@ -354,6 +355,7 @@
         // $(".question").attr("id", "question" + id);
         $(".text-left").append(unHeart).append(heart);
         isCollection(question.question_id);
+        // 试题类型
         $(".question_type div").empty();
         var tags_box = $("<div></div>");
         $.each(question.question_type, function (index, item) {
@@ -361,6 +363,7 @@
             tags_box.append(tags);
         });
         $(".question_type").append(tags_box);
+        // 试题解析
         $(".parse div").empty();
         var parse = "<div>" + question.question_parse + "</div>";
         $(".parse").append(parse);
@@ -383,7 +386,7 @@
             }
         })
     }
-
+// 帖子区域
     function showPost_area(pn, question_id) {
         console.log(question_id);
         $.ajax({

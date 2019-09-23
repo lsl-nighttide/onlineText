@@ -232,13 +232,11 @@
             success: function (result) {
                 console.log(result);
                 if (result.msg == "成功") {
-                    console.log("1111");
                     img_src = "assets/img/" + result.map.user.pic;
                     $("#b").addClass("caret");
                     $(".admin-pic").attr("src", img_src);
                     $("#login").hide();
                 } else {
-                    console.log("2222");
                     $("#b").removeClass("caret");
                     $("#login").show();
                 }
@@ -305,6 +303,7 @@
                         }
                     }
                 } else {
+                    // 自动补全未做题的答案
                     for (var k = 0; k < 10; k++) {
                         if (arr.indexOf(k) == -1) {
                             var check = {};
@@ -320,6 +319,7 @@
                 }
             }
             if (flag || checkQues.length == 10) {
+                // 保证与试题顺序相同
                 for (var m = 0; m < checkQues.length; m++) {
                     for (var n = m + 1; n < checkQues.length; n++) {
                         if (checkQues[m].id > checkQues[n].id) {
@@ -452,14 +452,12 @@
     function clickCollection(source) {
         console.log(source);
         if (source.id == ("unHeart" + activeQuestion)) {
-            console.log("1111");
             console.log($("#" + source.id));
             $("#" + source.id).hide();
             $("#heart" + activeQuestion).show();
             collection.push(question.question_id);
             console.log(collection);
         } else {
-            console.log("2222");
             $("#" + source.id).hide();
             $("#unHeart" + activeQuestion).show();
             collection = $.grep(collection, function (value) {
